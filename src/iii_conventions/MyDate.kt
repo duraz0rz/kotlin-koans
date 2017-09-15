@@ -1,5 +1,11 @@
 package iii_conventions
 
+enum class TimeInterval {
+    DAY,
+    WEEK,
+    YEAR
+}
+
 data class MyDate(val year: Int, val month: Int, val dayOfMonth: Int) : Comparable<MyDate> {
     override fun compareTo(other: MyDate): Int {
         if (this.year == other.year) {
@@ -12,13 +18,13 @@ data class MyDate(val year: Int, val month: Int, val dayOfMonth: Int) : Comparab
     }
 }
 
-operator fun MyDate.rangeTo(other: MyDate): DateRange = DateRange(this, other)
+data class RepeatingTimeInterval(val interval: TimeInterval, val number: Int)
 
-enum class TimeInterval {
-    DAY,
-    WEEK,
-    YEAR
-}
+operator fun MyDate.rangeTo(other: MyDate): DateRange = DateRange(this, other)
+operator fun MyDate.plus(interval: TimeInterval) : MyDate = this.addTimeIntervals(interval, 1)
+operator fun MyDate.plus(interval: RepeatingTimeInterval) : MyDate = this.addTimeIntervals(interval.interval, interval.number)
+
+operator fun TimeInterval.times(number: Int) : RepeatingTimeInterval = RepeatingTimeInterval(this, number)
 
 class DateRange(val start: MyDate, val endInclusive: MyDate) : Iterable<MyDate> {
     override fun iterator(): Iterator<MyDate> = object : Iterator<MyDate> {
